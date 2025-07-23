@@ -1,19 +1,9 @@
 import inquirer from 'inquirer';
 import { gerarPistas } from './gerarPistas.js';
 import { rodarJogo } from './rodarJogo.js';
+import { personagens } from './database/data.js';
 
 const jogadores = [];
-
-const personagens = [
-    { nome: 'Mario', velocidade: 4, manobrabilidade: 3, poder: 3 },
-    { nome: 'Luigi', velocidade: 3, manobrabilidade: 4, poder: 4 },
-    { nome: 'Peach', velocidade: 3, manobrabilidade: 4, poder: 2 },
-    { nome: 'Bowser', velocidade: 5, manobrabilidade: 2, poder: 5 },
-    { nome: 'Yoshi', velocidade: 2, manobrabilidade: 4, poder: 3 },
-    { nome: 'Donkey Kong', velocidade: 2, manobrabilidade: 2, poder: 5 }
-];
-
-
 
 async function iniciarJogo() {
     let personagemTemporario = personagens;
@@ -35,7 +25,12 @@ async function iniciarJogo() {
                 name: "nome",
                 message: 'Qual é o nome do jogador ' + (i + 1) + '?'
         }])
-        jogadores.push({nome: resposta["nome"]});
+        if (resposta["nome"] !== "") {
+            jogadores.push({ nome: resposta["nome"] });
+        }
+        else {
+            jogadores.push({ nome: "Anônimo" })
+        }
         console.log(`Jogador ${i + 1} adicionado: ${jogadores[i].nome}`);
 
     const personagemEscolhido = await inquirer.prompt([
@@ -52,6 +47,28 @@ async function iniciarJogo() {
     }
 
     const pistas = gerarPistas();
+
+    console.log("Jogadores:", jogadores);
+
+    if (jogadores.length === 1) {
+
+        function escolherPersonagemComputador() {
+            const personagemAleatorio = personagens[Math.floor(Math.random() * personagens.length)];
+            
+            if (jogadores[0].personagem !== personagemAleatorio.nome) {
+                return personagemAleatorio.nome;
+            }
+
+            escolherPersonagemComputador();
+        }
+
+        jogadores.push({
+            nome: 'Computador',
+            personagem: escolherPersonagemComputador()
+        })
+
+        console.log(`O computador escolheu o personagem ${jogadores[1].personagem}!`);
+    }
     
     rodarJogo(jogadores, pistas);
 

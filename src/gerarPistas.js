@@ -1,6 +1,8 @@
+import { regras } from "./database/data.js";
+
 export const gerarPistas = () => {
     const pistas = [];
-    const tiposPistas = ["RETA", "CURVA", "CONFRONTO"];
+    const tiposPistas = regras.map(regra => regra.tipoPista);
     
     for (let i = 0; i < 5; i++) {
 
